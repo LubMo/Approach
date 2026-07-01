@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Simple Past — Listening Activity</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f7f1e3;
+    --paper-line:#d9cdb0;
+    --ink:#243447;
+    --ink-soft:#5a6b7d;
+    --red:#b8452f;
+    --red-soft:#e7c3ba;
+    --sage:#5f7a52;
+    --sage-soft:#dfe8d5;
+    --gold:#b98a2b;
+    --gold-soft:#f0e0bb;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    padding:40px 20px 60px;
+    background:
+      repeating-linear-gradient(var(--paper) 0 35px, var(--paper-line) 35px 36px),
+      var(--paper);
+    font-family:'Source Serif 4', serif;
+    color:var(--ink);
+    display:flex;
+    justify-content:center;
+  }
+  .sheet{ max-width:680px; width:100%; }
+  header{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    border-bottom:3px solid var(--ink);
+    padding-bottom:14px;
+    margin-bottom:22px;
+  }
+  h1{
+    font-family:'Caveat', cursive;
+    font-weight:700;
+    font-size:2.6rem;
+    margin:0;
+    line-height:1;
+  }
+  .subtitle{
+    font-size:0.95rem;
+    color:var(--ink-soft);
+    margin-top:4px;
+    font-style:italic;
+  }
+  .score-stamp{
+    font-family:'Caveat', cursive;
+    font-weight:700;
+    font-size:1.6rem;
+    color:var(--red);
+    border:3px solid var(--red);
+    border-radius:8px;
+    padding:4px 14px;
+    transform:rotate(-6deg);
+    white-space:nowrap;
+    opacity:0;
+    transition:opacity .35s ease;
+  }
+  .score-stamp.show{ opacity:1; }
+
+  .instructions{
+    font-size:0.98rem;
+    color:var(--ink-soft);
+    margin-bottom:24px;
+    line-height:1.5;
+  }
+  .instructions b{color:var(--ink);}
+
+  /* --- Listening panel --- */
+  .listen-panel{
+    background:rgba(185,138,43,0.07);
+    border:2px solid var(--gold-soft);
+    border-radius:10px;
+    padding:20px;
+    margin-bottom:30px;
+  }
+  .listen-top{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    flex-wrap:wrap;
+  }
+  .listen-title{
+    font-family:'Caveat', cursive;
+    font-size:1.5rem;
+    font-weight:700;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .listen-title .dot{
+    width:10px; height:10px; border-radius:50%;
+    background:var(--red);
+    display:inline-block;
+  }
+  .listen-title .dot.playing{ animation:pulse 1s infinite ease-in-out; }
+  @keyframes pulse{ 0%,100%{opacity:1;} 50%{opacity:.3;} }
+
+  .plays-left{
+    font-family:'JetBrains Mono', monospace;
+    font-size:0.8rem;
+    color:var(--ink-soft);
+    background:rgba(90,107,125,0.08);
+    padding:3px 8px;
+    border-radius:5px;
+  }
+  .listen-controls{
+    display:flex;
+    gap:10px;
+    align-items:center;
+    margin-top:16px;
+    flex-wrap:wrap;
+  }
+  .speed-control{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    font-size:0.85rem;
+    color:var(--ink-soft);
+    margin-left:auto;
+  }
+  select{
+    font-family:'JetBrains Mono', monospace;
+    font-size:0.85rem;
+    padding:4px 6px;
+    border-radius:5px;
+    border:1px solid var(--paper-line);
+    background:var(--paper);
+    color:var(--ink);
+  }
+  .support-warning{
+    font-size:0.85rem;
+    color:var(--red);
+    margin-top:10px;
+    display:none;
+  }
+
+  .transcript-toggle{
+    margin-top:14px;
+    background:none;
+    border:none;
+    color:var(--ink-soft);
+    text-decoration:underline;
+    cursor:pointer;
+    font-family:'Source Serif 4', serif;
+    font-size:0.9rem;
+    padding:0;
+  }
+  .transcript{
+    margin-top:12px;
+    padding:14px;
+    background:var(--paper);
+    border:1px dashed var(--paper-line);
+    border-radius:8px;
+    font-size:0.98rem;
+    line-height:1.8;
+    display:none;
+  }
+  .transcript.show{ display:block; }
+  .transcript p{ margin:0 0 8px; }
+  .transcript b{ color:var(--gold); }
+
+  /* --- Questions --- */
+  .q{
+    padding:18px 0;
+    border-bottom:1px dashed var(--paper-line);
+  }
+  .q:last-of-type{ border-bottom:none; }
+  .q-text{
+    font-size:1.08rem;
+    margin-bottom:10px;
+    display:flex;
+    gap:10px;
+  }
+  .q-num{
+    font-family:'JetBrains Mono', monospace;
+    font-size:0.85rem;
+    color:var(--ink-soft);
+    min-width:20px;
+  }
+  .options{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    margin-left:30px;
+  }
+  .option{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:8px 12px;
+    border:2px solid var(--paper-line);
+    border-radius:7px;
+    cursor:pointer;
+    background:var(--paper);
+    transition:border-color .15s ease, background .15s ease;
+    font-size:0.98rem;
+  }
+  .option:hover{ border-color:var(--gold); }
+  .option input{ accent-color: var(--ink); }
+  .option.correct{
+    border-color:var(--sage);
+    background:var(--sage-soft);
+  }
+  .option.incorrect{
+    border-color:var(--red);
+    background:var(--red-soft);
+  }
+  .option.disabled{ cursor:default; }
+  .mark{
+    font-family:'Caveat', cursive;
+    font-weight:700;
+    font-size:1.3rem;
+  }
+  .mark.ok{ color:var(--sage); }
+  .mark.no{ color:var(--red); }
+
+  .actions{
+    display:flex;
+    gap:12px;
+    margin-top:28px;
+    align-items:center;
+    flex-wrap:wrap;
+  }
+  button.main{
+    font-family:'Source Serif 4', serif;
+    font-size:0.95rem;
+    font-weight:600;
+    padding:10px 22px;
+    border-radius:6px;
+    border:2px solid var(--ink);
+    background:var(--ink);
+    color:var(--paper);
+    cursor:pointer;
+    transition:transform .15s ease;
+  }
+  button.main:hover{ transform:translateY(-1px); }
+  button.main.secondary{ background:transparent; color:var(--ink); }
+  button.main:disabled{
+    opacity:0.4;
+    cursor:not-allowed;
+    transform:none;
+  }
+  button.icon-btn{
+    font-family:'Source Serif 4', serif;
+    font-size:0.92rem;
+    padding:9px 16px;
+    border-radius:6px;
+    border:2px solid var(--ink);
+    background:var(--ink);
+    color:var(--paper);
+    cursor:pointer;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+  }
+  button.icon-btn.secondary{ background:transparent; color:var(--ink); }
+  button:focus-visible{ outline:3px solid var(--gold); outline-offset:2px; }
+  button:disabled{ opacity:0.4; cursor:not-allowed; }
+
+  .feedback-line{
+    font-size:0.95rem;
+    color:var(--ink-soft);
+    margin-top:6px;
+  }
+  footer{
+    margin-top:36px;
+    font-size:0.85rem;
+    color:var(--ink-soft);
+    text-align:center;
+    font-style:italic;
+  }
+  @media (prefers-reduced-motion: reduce){ *{ animation:none !important; transition:none !important; } }
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <header>
+    <div>
+      <h1>Listen &amp; Choose</h1>
+      <div class="subtitle">Simple past — listening comprehension</div>
+    </div>
+    <div class="score-stamp" id="scoreStamp">0 / 6</div>
+  </header>
+
+  <p class="instructions">
+    Listen to the dialogue between <b>Mia</b> and <b>Dan</b>. You may listen up to <b>3 times</b>.
+    Then answer the questions below about what you heard and about the past-tense verbs used.
+  </p>
+
+  <div class="listen-panel">
+    <div class="listen-top">
+      <div class="listen-title"><span class="dot" id="playDot"></span> Dialogue</div>
+      <div class="plays-left" id="playsLeft">3 plays left</div>
+    </div>
+    <div class="listen-controls">
+      <button class="icon-btn" id="playBtn">▶ Play</button>
+      <button class="icon-btn secondary" id="stopBtn" disabled>■ Stop</button>
+      <div class="speed-control">
+        <label for="speedSelect">Speed</label>
+        <select id="speedSelect">
+          <option value="0.8">Slow</option>
+          <option value="1" selected>Normal</option>
+          <option value="1.15">Fast</option>
+        </select>
+      </div>
+    </div>
+    <div class="support-warning" id="supportWarning">
+      Your browser doesn't support speech synthesis — try Chrome, Edge, or Safari, or read the transcript below.
+    </div>
+    <button class="transcript-toggle" id="transcriptToggle">Show transcript</button>
+    <div class="transcript" id="transcript"></div>
+  </div>
+
+  <form id="quiz"></form>
+
+  <div class="actions">
+    <button type="button" class="main" id="checkBtn">Check answers</button>
+    <button type="button" class="main secondary" id="resetBtn">Try again</button>
+  </div>
+  <div class="feedback-line" id="feedbackLine"></div>
+
+  <footer>Tip: listen once for the general idea, then again to catch the exact verb forms.</footer>
+</div>
+
+<script>
+// ---------- Dialogue data ----------
+const dialogue = [
+  { speaker: "Mia", text: "Hey Dan, how was your weekend?" },
+  { speaker: "Dan", text: "It was great. I visited my grandparents in the countryside." },
+  { speaker: "Mia", text: "Nice! Did you take the train?" },
+  { speaker: "Dan", text: "No, I didn't take the train. I drove there with my sister." },
+  { speaker: "Mia", text: "How long did the trip take?" },
+  { speaker: "Dan", text: "It took about two hours. We stopped once for coffee." },
+  { speaker: "Mia", text: "What did you do when you arrived?" },
+  { speaker: "Dan", text: "We had lunch together, and then my grandfather showed me his old photos." },
+  { speaker: "Mia", text: "That sounds lovely. Did you stay overnight?" },
+  { speaker: "Dan", text: "Yes, we stayed until Sunday morning and then we came back home." }
+];
+
+// ---------- Questions ----------
+const questions = [
+  {
+    text: "How did Dan travel to his grandparents' house?",
+    options: ["By train", "He drove", "He walked"],
+    correct: 1
+  },
+  {
+    text: "Which sentence uses the correct simple past negative form?",
+    options: ["I no took the train.", "I didn't take the train.", "I didn't took the train."],
+    correct: 1
+  },
+  {
+    text: "How long did the trip take?",
+    options: ["One hour", "Two hours", "Three hours"],
+    correct: 1
+  },
+  {
+    text: "What is the simple past of \"take\" as used in the dialogue?",
+    options: ["taked", "took", "taken"],
+    correct: 1
+  },
+  {
+    text: "What did Dan's grandfather show him?",
+    options: ["Old letters", "A garden", "Old photos"],
+    correct: 2
+  },
+  {
+    text: "What is the simple past of \"come\"?",
+    options: ["comed", "came", "come"],
+    correct: 1
+  }
+];
+
+// ---------- Build transcript ----------
+const transcriptEl = document.getElementById('transcript');
+transcriptEl.innerHTML = dialogue.map(l => `<p><b>${l.speaker}:</b> ${l.text}</p>`).join('');
+
+document.getElementById('transcriptToggle').addEventListener('click', (e) => {
+  transcriptEl.classList.toggle('show');
+  e.target.textContent = transcriptEl.classList.contains('show') ? 'Hide transcript' : 'Show transcript';
+});
+
+// ---------- Build quiz ----------
+const form = document.getElementById('quiz');
+questions.forEach((q, qi) => {
+  const block = document.createElement('div');
+  block.className = 'q';
+  block.innerHTML = `
+    <div class="q-text"><span class="q-num">${qi+1}.</span><span>${q.text}</span></div>
+    <div class="options" data-qindex="${qi}">
+      ${q.options.map((opt, oi) => `
+        <label class="option" data-oindex="${oi}">
+          <input type="radio" name="q${qi}" value="${oi}">
+          <span>${opt}</span>
+          <span class="mark"></span>
+        </label>
+      `).join('')}
+    </div>
+  `;
+  form.appendChild(block);
+});
+
+// ---------- Speech synthesis ----------
+let playsLeft = 3;
+let isPlaying = false;
+const playBtn = document.getElementById('playBtn');
+const stopBtn = document.getElementById('stopBtn');
+const playDot = document.getElementById('playDot');
+const playsLeftEl = document.getElementById('playsLeft');
+const speedSelect = document.getElementById('speedSelect');
+const supportWarning = document.getElementById('supportWarning');
+
+const speechSupported = 'speechSynthesis' in window;
+if (!speechSupported) {
+  supportWarning.style.display = 'block';
+  playBtn.disabled = true;
+}
+
+function speakDialogue() {
+  if (!speechSupported || playsLeft <= 0) return;
+  window.speechSynthesis.cancel();
+  const rate = parseFloat(speedSelect.value);
+  const voices = window.speechSynthesis.getVoices();
+  const femaleVoice = voices.find(v => /female|zira|samantha|victoria/i.test(v.name)) || voices[0];
+  const maleVoice = voices.find(v => /male|david|daniel|fred/i.test(v.name)) || voices[1] || voices[0];
+
+  isPlaying = true;
+  playDot.classList.add('playing');
+  playBtn.disabled = true;
+  stopBtn.disabled = false;
+
+  dialogue.forEach((line) => {
+    const utter = new SpeechSynthesisUtterance(line.text);
+    utter.rate = rate;
+    utter.pitch = line.speaker === "Mia" ? 1.15 : 0.95;
+    utter.voice = line.speaker === "Mia" ? femaleVoice : maleVoice;
+    window.speechSynthesis.speak(utter);
+  });
+
+  const lastUtter = new SpeechSynthesisUtterance('');
+  lastUtter.onend = onPlaybackEnd;
+  // fallback: poll since chained onend across utterances can be unreliable in some browsers
+  const check = setInterval(() => {
+    if (!window.speechSynthesis.speaking) {
+      clearInterval(check);
+      onPlaybackEnd();
+    }
+  }, 300);
+}
+
+function onPlaybackEnd() {
+  if (!isPlaying) return;
+  isPlaying = false;
+  playDot.classList.remove('playing');
+  stopBtn.disabled = true;
+  playsLeft = Math.max(0, playsLeft - 1);
+  updatePlaysLeft();
+}
+
+function updatePlaysLeft() {
+  playsLeftEl.textContent = `${playsLeft} play${playsLeft === 1 ? '' : 's'} left`;
+  playBtn.disabled = playsLeft <= 0 || !speechSupported;
+  playBtn.textContent = playsLeft <= 0 ? '▶ No plays left' : '▶ Play';
+}
+
+playBtn.addEventListener('click', speakDialogue);
+stopBtn.addEventListener('click', () => {
+  window.speechSynthesis.cancel();
+  isPlaying = false;
+  playDot.classList.remove('playing');
+  stopBtn.disabled = true;
+});
+
+// Chrome loads voices async
+if (speechSupported) {
+  window.speechSynthesis.onvoiceschanged = () => {};
+}
+
+// ---------- Grading ----------
+document.getElementById('checkBtn').addEventListener('click', () => {
+  let correctCount = 0;
+  questions.forEach((q, qi) => {
+    const group = form.querySelector(`.options[data-qindex="${qi}"]`);
+    const selected = form.querySelector(`input[name="q${qi}"]:checked`);
+    const labels = group.querySelectorAll('.option');
+
+    labels.forEach((label, oi) => {
+      label.classList.add('disabled');
+      label.querySelector('input').disabled = true;
+      const mark = label.querySelector('.mark');
+      mark.textContent = '';
+      label.classList.remove('correct', 'incorrect');
+      if (oi === q.correct) {
+        label.classList.add('correct');
+        mark.textContent = '✓';
+        mark.classList.add('ok');
+      }
+    });
+
+    if (selected) {
+      const oi = parseInt(selected.value, 10);
+      if (oi === q.correct) {
+        correctCount++;
+      } else {
+        const wrongLabel = group.querySelector(`.option[data-oindex="${oi}"]`);
+        wrongLabel.classList.add('incorrect');
+        wrongLabel.querySelector('.mark').textContent = '✗';
+        wrongLabel.querySelector('.mark').classList.add('no');
+      }
+    }
+  });
+
+  const stamp = document.getElementById('scoreStamp');
+  stamp.textContent = `${correctCount} / ${questions.length}`;
+  stamp.classList.add('show');
+
+  const feedback = document.getElementById('feedbackLine');
+  if (correctCount === questions.length) {
+    feedback.textContent = "Excellent listening — every answer correct.";
+  } else if (correctCount >= questions.length * 0.6) {
+    feedback.textContent = "Good job — check the transcript to review any mistakes.";
+  } else {
+    feedback.textContent = "Try listening again or check the transcript, then retry.";
+  }
+});
+
+document.getElementById('resetBtn').addEventListener('click', () => {
+  form.querySelectorAll('.option').forEach(label => {
+    label.classList.remove('correct', 'incorrect', 'disabled');
+    label.querySelector('input').disabled = false;
+    label.querySelector('input').checked = false;
+    label.querySelector('.mark').textContent = '';
+  });
+  document.getElementById('scoreStamp').classList.remove('show');
+  document.getElementById('feedbackLine').textContent = '';
+  playsLeft = 3;
+  updatePlaysLeft();
+  transcriptEl.classList.remove('show');
+  document.getElementById('transcriptToggle').textContent = 'Show transcript';
+});
+
+updatePlaysLeft();
+</script>
+</body>
+</html>
