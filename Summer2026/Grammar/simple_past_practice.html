@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Simple Past — Fill in the Blanks</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f7f1e3;
+    --paper-line:#d9cdb0;
+    --ink:#243447;
+    --ink-soft:#5a6b7d;
+    --red:#b8452f;
+    --red-soft:#e7c3ba;
+    --sage:#5f7a52;
+    --sage-soft:#dfe8d5;
+    --gold:#b98a2b;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    padding:40px 20px 60px;
+    background:
+      repeating-linear-gradient(var(--paper) 0 35px, var(--paper-line) 35px 36px),
+      var(--paper);
+    background-attachment:local;
+    font-family:'Source Serif 4', serif;
+    color:var(--ink);
+    display:flex;
+    justify-content:center;
+  }
+  .sheet{
+    max-width:680px;
+    width:100%;
+    position:relative;
+  }
+  .margin-rule{
+    position:absolute;
+    top:0;
+    bottom:0;
+    left:-24px;
+    width:2px;
+    background:var(--red-soft);
+    display:none;
+  }
+  header{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    border-bottom:3px solid var(--ink);
+    padding-bottom:14px;
+    margin-bottom:28px;
+  }
+  h1{
+    font-family:'Caveat', cursive;
+    font-weight:700;
+    font-size:2.6rem;
+    margin:0;
+    line-height:1;
+    color:var(--ink);
+  }
+  .subtitle{
+    font-size:0.95rem;
+    color:var(--ink-soft);
+    margin-top:4px;
+    font-style:italic;
+  }
+  .score-stamp{
+    font-family:'Caveat', cursive;
+    font-weight:700;
+    font-size:1.6rem;
+    color:var(--red);
+    border:3px solid var(--red);
+    border-radius:8px;
+    padding:4px 14px;
+    transform:rotate(-6deg);
+    white-space:nowrap;
+    opacity:0;
+    transition:opacity .35s ease, transform .35s ease;
+  }
+  .score-stamp.show{
+    opacity:1;
+    transform:rotate(-6deg) scale(1);
+  }
+  .instructions{
+    font-size:0.98rem;
+    color:var(--ink-soft);
+    margin-bottom:26px;
+    line-height:1.5;
+  }
+  .instructions b{color:var(--ink);}
+  .item{
+    display:flex;
+    gap:14px;
+    padding:16px 0;
+    border-bottom:1px dashed var(--paper-line);
+    align-items:baseline;
+  }
+  .item:last-of-type{border-bottom:none;}
+  .num{
+    font-family:'JetBrains Mono', monospace;
+    font-size:0.85rem;
+    color:var(--ink-soft);
+    min-width:20px;
+    padding-top:3px;
+  }
+  .sentence{
+    font-size:1.12rem;
+    line-height:1.9;
+    flex:1;
+  }
+  .verb-hint{
+    font-family:'JetBrains Mono', monospace;
+    font-size:0.78rem;
+    color:var(--ink-soft);
+    background:rgba(90,107,125,0.08);
+    padding:1px 6px;
+    border-radius:4px;
+    white-space:nowrap;
+  }
+  .blank{
+    font-family:'JetBrains Mono', monospace;
+    font-size:1.05rem;
+    border:none;
+    border-bottom:2px solid var(--ink);
+    background:transparent;
+    width:130px;
+    padding:2px 4px;
+    color:var(--ink);
+    text-align:center;
+    outline:none;
+  }
+  .blank:focus{
+    border-bottom-color:var(--gold);
+    background:rgba(185,138,43,0.08);
+  }
+  .blank.correct{
+    border-bottom-color:var(--sage);
+    background:var(--sage-soft);
+    color:#33472b;
+  }
+  .blank.incorrect{
+    border-bottom-color:var(--red);
+    background:var(--red-soft);
+    color:var(--red);
+  }
+  .mark{
+    font-family:'Caveat', cursive;
+    font-weight:700;
+    font-size:1.5rem;
+    display:inline-block;
+    margin-left:2px;
+    opacity:0;
+    transform:scale(0.5) rotate(-15deg);
+    transition:all .3s ease;
+  }
+  .mark.show{opacity:1; transform:scale(1) rotate(-8deg);}
+  .mark.ok{color:var(--sage);}
+  .mark.no{color:var(--red);}
+  .correction{
+    font-family:'Caveat', cursive;
+    font-size:1.2rem;
+    color:var(--red);
+    margin-left:6px;
+    opacity:0;
+    transition:opacity .3s ease;
+  }
+  .correction.show{opacity:1;}
+  .actions{
+    display:flex;
+    gap:12px;
+    margin-top:32px;
+    align-items:center;
+    flex-wrap:wrap;
+  }
+  button{
+    font-family:'Source Serif 4', serif;
+    font-size:0.95rem;
+    font-weight:600;
+    padding:10px 22px;
+    border-radius:6px;
+    border:2px solid var(--ink);
+    background:var(--ink);
+    color:var(--paper);
+    cursor:pointer;
+    transition:transform .15s ease, background .15s ease;
+  }
+  button:hover{transform:translateY(-1px);}
+  button:active{transform:translateY(0);}
+  button.secondary{
+    background:transparent;
+    color:var(--ink);
+  }
+  button:focus-visible{
+    outline:3px solid var(--gold);
+    outline-offset:2px;
+  }
+  .feedback-line{
+    font-size:0.95rem;
+    color:var(--ink-soft);
+    margin-top:4px;
+  }
+  footer{
+    margin-top:36px;
+    font-size:0.85rem;
+    color:var(--ink-soft);
+    text-align:center;
+    font-style:italic;
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none !important;}
+  }
+  @media (max-width:520px){
+    .item{flex-direction:column; gap:6px;}
+    .num{display:none;}
+    .blank{width:110px;}
+  }
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <header>
+    <div>
+      <h1>Simple Past Practice</h1>
+      <div class="subtitle">Conjugate the verb in parentheses</div>
+    </div>
+    <div class="score-stamp" id="scoreStamp">0 / 10</div>
+  </header>
+
+  <p class="instructions">
+    Fill each blank with the <b>simple past</b> form of the verb shown in <span class="verb-hint">(brackets)</span>.
+    Some verbs are regular, some are irregular — watch out! Press <b>Check answers</b> when you're done.
+  </p>
+
+  <form id="quiz">
+    <!-- items injected by JS -->
+  </form>
+
+  <div class="actions">
+    <button type="button" id="checkBtn">Check answers</button>
+    <button type="button" id="resetBtn" class="secondary">Try again</button>
+  </div>
+  <div class="feedback-line" id="feedbackLine"></div>
+
+  <footer>Tip: irregular verbs don't follow the -ed rule — learn them as whole words.</footer>
+</div>
+
+<script>
+const items = [
+  { before: "Last summer, we", verb: "travel", after: "to Portugal with our cousins.", answer: "traveled" },
+  { before: "She", verb: "go", after: "to the market before it closed.", answer: "went" },
+  { before: "They", verb: "not/finish", after: "their homework before dinner.", answer: "didn't finish" },
+  { before: "He", verb: "buy", after: "a new bicycle for his birthday.", answer: "bought" },
+  { before: "I", verb: "see", after: "an old friend at the train station.", answer: "saw" },
+  { before: "We", verb: "study", after: "all night for the chemistry exam.", answer: "studied" },
+  { before: "The children", verb: "swim", after: "in the lake until sunset.", answer: "swam" },
+  { before: "My father", verb: "not/drive", after: "to work yesterday; he took the bus.", answer: "didn't drive" },
+  { before: "Someone", verb: "break", after: "the window during the storm.", answer: "broke" },
+  { before: "You", verb: "arrive", after: "just in time for the movie.", answer: "arrived" }
+];
+
+const form = document.getElementById('quiz');
+
+items.forEach((item, i) => {
+  const row = document.createElement('div');
+  row.className = 'item';
+  row.innerHTML = `
+    <span class="num">${String(i+1).padStart(2,'0')}</span>
+    <span class="sentence">
+      ${item.before}
+      <input
+        type="text"
+        class="blank"
+        data-index="${i}"
+        autocomplete="off"
+        spellcheck="false"
+        aria-label="Answer for sentence ${i+1}"
+      />
+      <span class="verb-hint">(${item.verb.replace('/', ' / ')})</span>
+      ${item.after}
+      <span class="mark" data-mark="${i}"></span>
+      <span class="correction" data-correction="${i}"></span>
+    </span>
+  `;
+  form.appendChild(row);
+});
+
+function normalize(str){
+  return str.trim().toLowerCase().replace(/\s+/g, ' ').replace(/’/g, "'");
+}
+
+document.getElementById('checkBtn').addEventListener('click', () => {
+  let correctCount = 0;
+  items.forEach((item, i) => {
+    const input = form.querySelector(`.blank[data-index="${i}"]`);
+    const mark = form.querySelector(`.mark[data-mark="${i}"]`);
+    const correction = form.querySelector(`.correction[data-correction="${i}"]`);
+    const userVal = normalize(input.value);
+    const isCorrect = userVal === normalize(item.answer);
+
+    input.classList.remove('correct', 'incorrect');
+    mark.classList.remove('show', 'ok', 'no');
+    correction.classList.remove('show');
+    correction.textContent = '';
+
+    if (isCorrect) {
+      input.classList.add('correct');
+      mark.textContent = '✓';
+      mark.classList.add('show', 'ok');
+      correctCount++;
+    } else {
+      input.classList.add('incorrect');
+      mark.textContent = '✗';
+      mark.classList.add('show', 'no');
+      correction.textContent = `→ ${item.answer}`;
+      correction.classList.add('show');
+    }
+  });
+
+  const stamp = document.getElementById('scoreStamp');
+  stamp.textContent = `${correctCount} / ${items.length}`;
+  stamp.classList.add('show');
+
+  const feedback = document.getElementById('feedbackLine');
+  if (correctCount === items.length) {
+    feedback.textContent = "Perfect score. Every verb correctly conjugated.";
+  } else if (correctCount >= items.length * 0.6) {
+    feedback.textContent = "Good work — check the corrections shown after each mistake.";
+  } else {
+    feedback.textContent = "Keep practicing — review the corrections and try again.";
+  }
+});
+
+document.getElementById('resetBtn').addEventListener('click', () => {
+  form.querySelectorAll('.blank').forEach(input => {
+    input.value = '';
+    input.classList.remove('correct', 'incorrect');
+  });
+  form.querySelectorAll('.mark').forEach(m => { m.classList.remove('show','ok','no'); m.textContent=''; });
+  form.querySelectorAll('.correction').forEach(c => { c.classList.remove('show'); c.textContent=''; });
+  document.getElementById('scoreStamp').classList.remove('show');
+  document.getElementById('feedbackLine').textContent = '';
+  form.querySelector('.blank').focus();
+});
+</script>
+</body>
+</html>
